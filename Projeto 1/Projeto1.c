@@ -50,7 +50,7 @@ void comm_q (int contador_prod, produto produtos[MAX_PROD])
 }
 
 /* Adiciona uma encomenda ao sistema (com auxilio do incremento 
-do contador de encomendas, feito dentro da funcao main) */
+do contador de encomendas, feito dentro da funcao main). */
 void comm_N (int contador_enc)
 {
     printf ("Nova encomenda %d.\n", contador_enc);
@@ -246,7 +246,7 @@ void comm_l (int contador_prod, produto produtos[MAX_PROD], int produtos_ord[MAX
     for (i = 0; i < contador_prod; i++) /* Copia dos indices do array dos produtos da encomenda ide para os ordenar depois. */
         produtos_ord[i] = i;
     mergesort (UM, produtos_ord, ZERO, contador_prod-1, produtos); /* Merge sort do array dos indices da forma descrita no comentario do cabecalho.*/
-    for (i = 0; i < contador_prod; i++) /* Imprimir dados */
+    for (i = 0; i < contador_prod; i++)
         printf ("* %s %d %d\n", produtos[produtos_ord[i]].nome, produtos[produtos_ord[i]].preco, produtos[produtos_ord[i]].qtd);
 }
 
@@ -267,7 +267,7 @@ void comm_L (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
             if (encomendas[ide][i] != 0)
                 encomenda_ord[contador++] = i;
         mergesort (ZERO, encomenda_ord, ZERO, contador-1, produtos); /* Merge sort do array dos indices da forma descrita no comentario do cabecalho.*/
-        for (i = 0; i < contador; i++) /* Impressao dos dados. */
+        for (i = 0; i < contador; i++)
             if (encomendas[ide][encomenda_ord[i]] > 0)
                 printf ("* %s %d %d\n", produtos[encomenda_ord[i]].nome, produtos[encomenda_ord[i]].preco, encomendas[ide][encomenda_ord[i]]);
     }
