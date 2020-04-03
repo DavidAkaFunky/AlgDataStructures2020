@@ -14,7 +14,7 @@
 #define MAX_ENC 500 /* Maximo de encomendas permitidas no sistema. */
 #define MAX_PROD 10000 /* Maximo de produtos permitidos no sistema. */
 
-/* Estrutura usada nos produtos, composto pelo seu nome, preco, peso e quantidade do produto no sistema. */
+/* Definicao da estrutura usada nos produtos, composto pelo seu nome, preco, peso e quantidade do produto no sistema. */
 typedef struct
 {
     char nome[MAX_NOME];
@@ -24,8 +24,11 @@ typedef struct
 }
 produto;
 
-/* Definicao do array das encomendas globalmente, devido as restricoes de tamanho da stack. */
-int encomendas[MAX_ENC][MAX_PROD];
+produto produtos[MAX_PROD]; /* Inicializacao do array dos produtos. */
+char comm; /* Inicializacao do caracter usado como comando do programa. */
+int encomendas[MAX_ENC][MAX_PROD]; /* Inicializaco do array das encomendas. */
+int contador_prod = 0, contador_enc = 0; /* Inicializacao dos contadores do numero de produtos e de encomendas no sistema. */
+int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, chamado pelas funcoes comm_l e comm_L. */
 
 /* Adiciona um produto novo ao sistema (com auxilio do incremento do contador de produtos,
 feito dentro da funcao main), de acordo com a definicao da estrutura correspondente. */
@@ -202,15 +205,15 @@ void comm_m (int contador_prod, int contador_enc, int encomendas[MAX_ENC][MAX_PR
 o arrays a ordenar, conforme a funcao que invocou o merge sort (1 no
 caso de comm_l, 0 no caso de comm_L). Esta funcao e estavel, devido
 as restricoes de desempate descritas no enunciado do projeto. */
-void merge(int flag, int ord[MAX_PROD], int left, int m, int right, produto produtos[MAX_PROD])
+void merge(int flag, int ord[MAX_PROD], int esq, int meio, int dir, produto produtos[MAX_PROD])
 {
     int aux[MAX_PROD];
     int i, j, k, cmp;
-    for (i = m+1; i > left; i--)
+    for (i = meio+1; i > esq; i--)
         aux[i-1] = ord[i-1];
-    for (j = m; j < right; j++)
-        aux[right+m-j] = ord[j+1];
-    for (k = left; k <= right; k++)
+    for (j = meio; j < dir; j++)
+        aux[dir+meio-j] = ord[j+1];
+    for (k = esq; k <= dir; k++)
     {
         if (flag)
             cmp = produtos[aux[j]].preco < produtos[aux[i]].preco;
@@ -225,14 +228,14 @@ void merge(int flag, int ord[MAX_PROD], int left, int m, int right, produto prod
 
 /* Funcao de base do merge sort, incluido a fracao recursiva,
 como usado nos slides da unidade curricular. */
-void mergesort(int flag, int ord[MAX_PROD], int left, int right, produto produtos[MAX_PROD]) 
+void mergesort(int flag, int ord[MAX_PROD], int esq, int dir, produto produtos[MAX_PROD]) 
 {
-    int m = (right+left)/2;
-    if (right <= left)
+    int meio = (dir+esq)/2;
+    if (dir <= esq)
         return;
-    mergesort(flag, ord, left, m, produtos);
-    mergesort(flag, ord, m+1, right, produtos);
-    merge(flag, ord, left, m, right, produtos);
+    mergesort(flag, ord, esq, meio, produtos);
+    mergesort(flag, ord, meio+1, dir, produtos);
+    merge(flag, ord, esq, meio, dir, produtos);
 }
 
 /* Devolve todos os produtos presentes no sistema, por ordem crescente 
@@ -277,10 +280,6 @@ void comm_L (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
 descrito no enunciado do projeto. O comando 'x' encerra o programa. */
 int main()
 {
-    char comm; /* Inicializacao do caracter usado como comando do programa. */
-    produto produtos[MAX_PROD]; /* Inicializacao do array dos produtos, definidos no cabecalho do programa. */
-    int contador_prod = 0, contador_enc = 0; /* Inicializacao dos contadores do numero de produtos e de encomendas no sistema. */
-    int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, chamado pelas funcoes comm_l e comm_L. */
     while ((comm = getchar()) != 'x') /* Introducao do comando. */
     {
         switch (comm)
