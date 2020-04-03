@@ -24,6 +24,8 @@ typedef struct
 }
 produto;
 
+/* Inicializacao das variaveis e arrays a usar no projeto. Foi necessario 
+faze-lo globalmente, devido a dimensao insuficente da pilha. */
 produto produtos[MAX_PROD]; /* Inicializacao do array dos produtos. */
 char comm; /* Inicializacao do caracter usado como comando do programa. */
 int encomendas[MAX_ENC][MAX_PROD]; /* Inicializaco do array das encomendas. */
