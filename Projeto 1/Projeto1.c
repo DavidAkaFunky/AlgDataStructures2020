@@ -34,14 +34,14 @@ int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, ch
 
 /* Adiciona um produto novo ao sistema (com auxilio do incremento do contador de produtos,
 feito dentro da funcao main), de acordo com a definicao da estrutura correspondente. */
-void comm_a(int contador_prod, produto produtos[MAX_PROD])
+void comm_a(int contador_prod)
 {
     scanf (" %[^:]:%d:%d:%d", produtos[contador_prod].nome, &produtos[contador_prod].preco, &produtos[contador_prod].peso, &produtos[contador_prod].qtd);
     printf ("Novo produto %d.\n", contador_prod);
 }
 
 /* Adiciona qtd unidades do produto idp ao sistema, caso esse produto exista. */
-void comm_q (int contador_prod, produto produtos[MAX_PROD])
+void comm_q (int contador_prod)
 {
     int idp, qtd;
     scanf (" %d", &idp);
@@ -65,7 +65,7 @@ void comm_N (int contador_enc)
 exista na quantidade pedida, a encomenda tambem exista e o peso da encomenda
 (soma dos produtos, multiplicados, respetivamente, pelo seu peso unitario) nao
 exceda 200. Se tal for possivel, essas unidades sao removidas do sistema. */
-void comm_A (int contador_prod, int contador_enc, produto produtos[MAX_PROD], int encomendas[MAX_ENC][MAX_PROD])
+void comm_A (int contador_prod, int contador_enc)
 {
     int ide, idp, qtd, peso = 0, i;
     scanf ("%d:%d:", &ide, &idp);
@@ -82,10 +82,10 @@ void comm_A (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
                 printf ("Impossivel adicionar produto %d a encomenda %d. Quantidade em stock insuficiente.\n", idp, ide);
             else
             {
-                for (i = 0; i < contador_prod && peso <= 200; i++)
+                for (i = 0; i < contador_prod && peso <= MAX_PESO; i++)
                     peso += produtos[i].peso * encomendas[ide][i];
                 peso += produtos[idp].peso * qtd;
-                if (peso > 200) /* Verificacao do peso da encomenda. */
+                if (peso > MAX_PESO) /* Verificacao do peso da encomenda. */
                     printf ("Impossivel adicionar produto %d a encomenda %d. Peso da encomenda excede o maximo de 200.\n", idp, ide);
                 else /* Transferencia das unidades do sistema para a encomenda. */
                 {
@@ -99,7 +99,7 @@ void comm_A (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
 
 /* Remove qtd unidades do produto idp do sistema, 
 caso esse produto exista na quantidade pedida.*/
-void comm_r (int contador_prod, produto produtos[MAX_PROD])
+void comm_r (int contador_prod)
 {
     int idp, qtd;
     scanf ("%d", &idp);
@@ -118,7 +118,7 @@ void comm_r (int contador_prod, produto produtos[MAX_PROD])
 
 /* Remove todas as unidades do produto idp da encomenda ide, caso ambos existam.
 Se tal for possivel, essas unidades sao devolvidas ao sistema. */
-void comm_R (int contador_prod, int contador_enc, produto produtos[MAX_PROD], int encomendas[MAX_ENC][MAX_PROD])
+void comm_R (int contador_prod, int contador_enc)
 {
     int ide, idp;
     scanf ("%d:%d:", &ide, &idp);
@@ -138,7 +138,7 @@ void comm_R (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
 
 /* Calcula e devolve o custo total de uma encomenda (soma dos produtos, multiplicados,
 respetivamente, pelo seu custo unitario), caso essa encomenda exista. */
-void comm_C (int contador_prod, int contador_enc, produto produtos[MAX_PROD], int encomendas[MAX_ENC][MAX_PROD])
+void comm_C (int contador_prod, int contador_enc)
 {
     int ide, i, total = 0;
     scanf ("%d", &ide);
@@ -153,7 +153,7 @@ void comm_C (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
 }
 
 /* Altera o preco unitario de um produto, caso ele exista. */
-void comm_p (int contador_prod, produto produtos[MAX_PROD])
+void comm_p (int contador_prod)
 {
     int idp;
     scanf ("%d", &idp);
@@ -164,7 +164,7 @@ void comm_p (int contador_prod, produto produtos[MAX_PROD])
 }
 
 /* Devolve o nome do produto idp e a sua quantidade na encomenda ide, caso ambos existam. */
-void comm_E (int contador_prod, int contador_enc, produto produtos[MAX_PROD], int encomendas[MAX_ENC][MAX_PROD])
+void comm_E (int contador_prod, int contador_enc)
 {
     int ide, idp;
     scanf ("%d", &ide);
@@ -182,7 +182,7 @@ void comm_E (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
 
 /* Devolve o ide (ID da encomenda) onde o produto idp existe em 
 maior quantidade e a respetiva quantidade, caso ambos existam. */
-void comm_m (int contador_prod, int contador_enc, int encomendas[MAX_ENC][MAX_PROD])
+void comm_m (int contador_prod, int contador_enc)
 {
     int idp, ide, ide_max, qtd = 0;
     scanf ("%d", &idp);
@@ -207,7 +207,7 @@ void comm_m (int contador_prod, int contador_enc, int encomendas[MAX_ENC][MAX_PR
 o arrays a ordenar, conforme a funcao que invocou o merge sort (1 no
 caso de comm_l, 0 no caso de comm_L). Esta funcao e estavel, devido
 as restricoes de desempate descritas no enunciado do projeto. */
-void merge(int flag, int ord[MAX_PROD], int esq, int meio, int dir, produto produtos[MAX_PROD])
+void merge(int flag, int esq, int meio, int dir)
 {
     int aux[MAX_PROD];
     int i, j, k, cmp;
@@ -230,38 +230,38 @@ void merge(int flag, int ord[MAX_PROD], int esq, int meio, int dir, produto prod
 
 /* Funcao de base do merge sort, incluido a fracao recursiva,
 como usado nos slides da unidade curricular. */
-void mergesort(int flag, int ord[MAX_PROD], int esq, int dir, produto produtos[MAX_PROD]) 
+void mergesort(int flag, int esq, int dir) 
 {
     int meio = (dir+esq)/2;
     if (dir <= esq)
         return;
-    mergesort(flag, ord, esq, meio, produtos);
-    mergesort(flag, ord, meio+1, dir, produtos);
-    merge(flag, ord, esq, meio, dir, produtos);
+    mergesort(flag, esq, meio);
+    mergesort(flag, meio+1, dir);
+    merge(flag, esq, meio, dir);
 }
 
 /* Devolve todos os produtos presentes no sistema, por ordem crescente 
 de custo unitario, com recurso a um array auxiliar que contem os indices dos produtos
 e que, no final, refletira essa ordem. Em caso de empate, os produtos em questao sao 
 listados por ordem crescente de idp.*/
-void comm_l (int contador_prod, produto produtos[MAX_PROD], int produtos_ord[MAX_PROD])
+void comm_l (int contador_prod)
 {
-    int i;
+    int i, j;
     puts ("Produtos");
     for (i = 0; i < contador_prod; i++) /* Copia dos indices do array dos produtos da encomenda ide para os ordenar depois. */
-        produtos_ord[i] = i;
-    mergesort (UM, produtos_ord, ZERO, contador_prod-1, produtos); /* Merge sort do array dos indices da forma descrita no comentario do cabecalho.*/
-    for (i = 0; i < contador_prod; i++)
-        printf ("* %s %d %d\n", produtos[produtos_ord[i]].nome, produtos[produtos_ord[i]].preco, produtos[produtos_ord[i]].qtd);
+        ord[i] = i;
+    mergesort (UM, 0, contador_prod-1); /* Merge sort do array dos indices da forma descrita no comentario do cabecalho.*/
+    for (j = 0; j < contador_prod; j++)
+        printf ("* %s %d %d\n", produtos[ord[j]].nome, produtos[ord[j]].preco, produtos[ord[j]].qtd);
 }
 
 /* Devolve todos os produtos presentes na encomenda ide, caso esta exista,
 por ordem alfabetica do seu nome, com recurso a um array auxiliar que 
 contem os indices dos produtos e que, no final, refletira essa ordem. 
 Em caso de empate, os produtos em questao sao listados por ordem crescente de idp. */
-void comm_L (int contador_prod, int contador_enc, produto produtos[MAX_PROD], int encomendas[MAX_ENC][MAX_PROD], int encomenda_ord[MAX_PROD])
+void comm_L (int contador_prod, int contador_enc)
 {
-    int ide, i, contador = 0;
+    int ide, i, j, contador = 0;
     scanf ("%d", &ide);
     if (ide >= contador_enc) /* Verificacao da existencia do produto. */
         printf ("Impossivel listar encomenda %d. Encomenda inexistente.\n", ide);
@@ -270,11 +270,11 @@ void comm_L (int contador_prod, int contador_enc, produto produtos[MAX_PROD], in
         printf ("Encomenda %d\n", ide);
         for (i = 0; i < contador_prod; i++) /* Copia dos indices do array dos produtos da encomenda ide para os ordenar depois. */
             if (encomendas[ide][i] != 0)
-                encomenda_ord[contador++] = i;
-        mergesort (ZERO, encomenda_ord, ZERO, contador-1, produtos); /* Merge sort do array dos indices da forma descrita no comentario do cabecalho.*/
-        for (i = 0; i < contador; i++)
-            if (encomendas[ide][encomenda_ord[i]] > 0)
-                printf ("* %s %d %d\n", produtos[encomenda_ord[i]].nome, produtos[encomenda_ord[i]].preco, encomendas[ide][encomenda_ord[i]]);
+                ord[contador++] = i;
+        mergesort (ZERO, 0, contador-1); /* Merge sort do array dos indices da forma descrita no comentario do cabecalho.*/
+        for (j = 0; j < contador; j++)
+            if (encomendas[ide][ord[j]] > 0)
+                printf ("* %s %d %d\n", produtos[ord[j]].nome, produtos[ord[j]].preco, encomendas[ide][ord[j]]);
     }
 }
 
@@ -287,40 +287,40 @@ int main()
         switch (comm)
         {
             case 'a':
-                comm_a (contador_prod++, produtos);
+                comm_a (contador_prod++);
                 break;
             case 'q':
-                comm_q (contador_prod, produtos);
+                comm_q (contador_prod);
                 break;
             case 'N':
                 comm_N (contador_enc++);
                 break;
             case 'A':
-                comm_A (contador_prod, contador_enc, produtos, encomendas);
+                comm_A (contador_prod, contador_enc);
                 break;
             case 'r':
-                comm_r (contador_prod, produtos);
+                comm_r (contador_prod);
                 break;
             case 'R':
-                comm_R (contador_prod, contador_enc, produtos, encomendas);
+                comm_R (contador_prod, contador_enc);
                 break;
             case 'C':
-                comm_C (contador_prod, contador_enc, produtos, encomendas);
+                comm_C (contador_prod, contador_enc);
                 break;
             case 'p':
-                comm_p (contador_prod, produtos);
+                comm_p (contador_prod);
                 break;
             case 'E':
-                comm_E (contador_prod, contador_enc, produtos, encomendas);
+                comm_E (contador_prod, contador_enc);
                 break;
             case 'm':
-                comm_m (contador_prod, contador_enc, encomendas);
+                comm_m (contador_prod, contador_enc);
                 break;
             case 'l':
-                comm_l (contador_prod, produtos, ord);
+                comm_l (contador_prod);
                 break;
             case 'L':
-                comm_L (contador_prod, contador_enc, produtos, encomendas, ord);
+                comm_L (contador_prod, contador_enc);
                 break;
         }
     }
