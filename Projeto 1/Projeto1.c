@@ -71,27 +71,24 @@ void comm_A (int contador_prod, int contador_enc)
     scanf ("%d:%d:", &ide, &idp);
     if (ide >= contador_enc) /* Verificacao da existencia da encomenda. */
         printf ("Impossivel adicionar produto %d a encomenda %d. Encomenda inexistente.\n", idp, ide);
+    else if (idp >= contador_prod) /* Verificacao da existencia do produto. Alteracao menor de indentacao apos o deadline do projeto.*/
+        printf ("Impossivel adicionar produto %d a encomenda %d. Produto inexistente.\n", idp, ide);
     else
     {
-        if (idp >= contador_prod) /* Verificacao da existencia do produto. */
-            printf ("Impossivel adicionar produto %d a encomenda %d. Produto inexistente.\n", idp, ide);
+        scanf ("%d", &qtd);
+        if (produtos[idp].qtd < qtd) /* Verificacao do numero de unidades do produto no sistema. */
+            printf ("Impossivel adicionar produto %d a encomenda %d. Quantidade em stock insuficiente.\n", idp, ide);
         else
         {
-            scanf ("%d", &qtd);
-            if (produtos[idp].qtd < qtd) /* Verificacao do numero de unidades do produto no sistema. */
-                printf ("Impossivel adicionar produto %d a encomenda %d. Quantidade em stock insuficiente.\n", idp, ide);
-            else
+            for (i = 0; i < contador_prod && peso <= MAX_PESO; i++)
+                peso += produtos[i].peso * encomendas[ide][i];
+            peso += produtos[idp].peso * qtd;
+            if (peso > MAX_PESO) /* Verificacao do peso da encomenda. */
+                printf ("Impossivel adicionar produto %d a encomenda %d. Peso da encomenda excede o maximo de 200.\n", idp, ide);
+            else /* Transferencia das unidades do sistema para a encomenda. */
             {
-                for (i = 0; i < contador_prod && peso <= MAX_PESO; i++)
-                    peso += produtos[i].peso * encomendas[ide][i];
-                peso += produtos[idp].peso * qtd;
-                if (peso > MAX_PESO) /* Verificacao do peso da encomenda. */
-                    printf ("Impossivel adicionar produto %d a encomenda %d. Peso da encomenda excede o maximo de 200.\n", idp, ide);
-                else /* Transferencia das unidades do sistema para a encomenda. */
-                {
-                    encomendas[ide][idp] += qtd;
-                    produtos[idp].qtd -= qtd;
-                }
+                encomendas[ide][idp] += qtd;
+                produtos[idp].qtd -= qtd;
             }
         }
     }
