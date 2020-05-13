@@ -28,8 +28,7 @@ void repor_score(equipa* eq_casa, equipa* eq_fora, int golos_casa, int golos_for
 jogo* cria_jogo(char* nome, equipa* eq_casa, equipa* eq_fora, int golos_casa, int golos_fora)
 {
     jogo* novo_jogo = (jogo*) malloc(sizeof(jogo));
-    novo_jogo -> nome = (char*) malloc (strlen(nome)+1);
-    strcpy(novo_jogo -> nome, nome);
+    novo_jogo -> nome = nome;
     novo_jogo -> eq_casa = eq_casa;
     novo_jogo -> eq_fora = eq_fora;
     novo_jogo -> golos_casa = golos_casa;
@@ -66,22 +65,15 @@ jogo* procura_jogo_hash(char* nome, lista_jogos** hash_table_jogos)
     return NULL;
 }
 
-void destroi_lista_jogos(lista_jogos* l)
+void destroi_lista_jogos(int flag, lista_jogos* l)
 {
-    while (l -> inicio)
+    while (l -> fim)
     {
-        node_jogo* aux = l -> inicio -> prox;
-        if(l-> inicio -> jogo)
-        {
-            if (l -> inicio -> jogo -> eq_casa && l -> inicio -> jogo -> eq_fora)
-            {
-                free (l -> inicio -> jogo -> eq_casa);
-                free (l -> inicio -> jogo -> eq_fora);
-            }
-            free (l -> inicio -> jogo);
-        }
-        free(l -> inicio);
-        l -> inicio = aux;
+        node_jogo* aux = l -> fim -> ant;
+        if(flag)
+            free (l -> fim -> jogo);
+        free(l -> fim);
+        l -> fim = aux;
     }
     free(l);
 }
@@ -106,6 +98,6 @@ void destroi_hash_table_jogos(lista_jogos** hash_table_jogos, int hash)
     int i;
     for (i = 0; i < hash; i++)
     {
-        destroi_lista_jogos(hash_table_jogos[i]);
+        destroi_lista_jogos(1, hash_table_jogos[i]);
     }
 }
