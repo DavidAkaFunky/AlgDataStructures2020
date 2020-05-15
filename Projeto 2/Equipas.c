@@ -1,5 +1,7 @@
 #include "Equipas.h"
 #include "Hash.h"
+#define MAX 1024
+#define HASH 1777
 
 equipa cria_equipa(char* nome)
 {
@@ -13,14 +15,14 @@ equipa cria_equipa(char* nome)
 equipa* procura_equipa_hash(char* nome, lista_equipas** hash_table_equipas)
 {
     int hash_nome = hash(nome, HASH);
-    lista_equipas* aux = hash_table_equipas[hash_nome];
-    while (aux -> inicio)
+    node_equipa* aux = hash_table_equipas[hash_nome] -> inicio;
+    while (aux)
     {
-        if (!strcmp(aux -> inicio -> equipa.nome, nome))
+        if (!strcmp(aux -> equipa.nome, nome))
         {
-            return &(aux -> inicio -> equipa);
+            return &(aux -> equipa);
         }
-        aux -> inicio = aux -> inicio -> prox;
+        aux = aux -> prox;
     }
     return NULL;
 }
@@ -43,7 +45,7 @@ void cria_hash_table_equipas(lista_equipas** hash_table_equipas, int hash)
 
 void insere_fim_equipa(lista_equipas* l, equipa nova_equipa)
 {
-    node_equipa* n = malloc(sizeof(node_equipa));
+    node_equipa* n = (node_equipa*) malloc(sizeof(node_equipa));
     n -> prox = NULL;
     n -> ant = l -> fim;
     n -> equipa = nova_equipa;
@@ -62,12 +64,12 @@ void insere_equipa_hash(lista_equipas** hash_table_equipas, equipa nova_equipa)
 
 void destroi_lista_equipas(lista_equipas* l)
 {
-    while (l -> inicio)
+    while (l -> fim)
     {
-        node_equipa* aux = l -> inicio -> prox;
-        free(l -> inicio -> equipa.nome);
-        free(l -> inicio);
-        l -> inicio = aux;
+        node_equipa* aux = l -> fim -> ant;
+        free(l -> fim -> equipa.nome);
+        free(l -> fim);
+        l -> fim = aux;
     }
     free(l);
 }
