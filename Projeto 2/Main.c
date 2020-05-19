@@ -1,220 +1,249 @@
+/* Ficheiro: Projeto2/Main.c
+ * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
+ * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
+ * sobre estas entidades (criacao, alteracao de parametros e remocao).
+ * Descricao especifica: Este ficheiro contem as funcoes basicas chamadas pelo programa
+ * atraves do caracter inicial.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "Equipas.h"
 #include "Jogos.h"
-#include "Hash.h"
+#include "Misc.h"
 
-void adiciona_jogo(int cont_linhas, lista_equipas** hash_table_equipas, lista_jogos* lst_jogos, lista_jogos** hash_table_jogos)
+/* Funcoes basicas sobre equipas (adicao, procura e listagem das que possuem mais vitorias)
+ * Estas funcoes recorrem a estruturas e outras funcoes presentes nos ficheiros Equipas.c
+ * e Equipas.h.
+ */
+
+/* Adiciona uma equipa ao sistema, caso ainda nao exista uma com o mesmo nome. */
+equipa** adiciona_equipa(int cont_linhas, equipa** h_equipas, int* tam_h_equipas, int* cont_equipas)
 {
-    char nome_jogo[MAX];
-    scanf(" %[^:\n]", nome_jogo);
-    if (procura_jogo_hash(nome_jogo, hash_table_jogos) != NULL)
-        printf("%d Jogo existente.\n", cont_linhas);
-    else
+    char nome[MAX];
+    equipa* nova_equipa;
+    scanf(" %1023[^:\n]", nome);
+    if (procura_equipa_hash(nome, h_equipas, *tam_h_equipas))
     {
-        equipa *eq_casa, *eq_fora;
-        char nome_casa[MAX], nome_fora[MAX];
-        scanf(":%[^:\n]:%[^:\n]", nome_casa, nome_fora);
-        if (!((eq_casa = procura_equipa_hash(nome_casa, hash_table_equipas)) && (eq_fora = procura_equipa_hash(nome_fora, hash_table_equipas))))
-            printf("%d Equipa inexistente.\n", cont_linhas);
-        else
-        {
-            int golos_casa, golos_fora;
-            jogo* novo_jogo;
-            scanf(":%d:%d", &golos_casa, &golos_fora);
-            novo_jogo = cria_jogo(nome_jogo, eq_casa, eq_fora, golos_casa, golos_fora);
-            insere_fim_jogo(lst_jogos, novo_jogo);
-            insere_jogo_hash(hash_table_jogos, novo_jogo);
-        }
-    }
-}
-
-void adiciona_equipa(int cont_linhas, int* cont_equipas, lista_equipas** hash_table_equipas)
-{
-    char nome_equipa[MAX];
-    scanf(" %[^:\n]", nome_equipa);
-    if (procura_equipa_hash(nome_equipa, hash_table_equipas) != NULL)
         printf("%d Equipa existente.\n", cont_linhas);
-    else
-    {
-        equipa nova_equipa = cria_equipa(nome_equipa);
-        (*cont_equipas)++;
-        insere_equipa_hash(hash_table_equipas, nova_equipa);
+        return h_equipas;
     }
+    (*cont_equipas)++;
+    nova_equipa = cria_equipa(nome);
+    h_equipas = insere_equipa_hash(h_equipas, nova_equipa, cont_equipas, tam_h_equipas);
+    return h_equipas;
 }
 
-void listar_jogos(int cont_linhas, lista_jogos* lst_jogos)
+/* Procura uma equipa no sistema e devolve o seu nome e numero de vitorias, caso exista. */
+void procura_equipa(int cont_linhas, equipa** h_equipas, int tam_h_equipas)
 {
-    node_jogo* aux = lst_jogos -> inicio;
-    while (aux)
-    {
-        printf("%d %s %s %s %d %d\n", cont_linhas, aux -> jogo -> nome, aux  -> jogo -> eq_casa -> nome, aux -> jogo -> eq_fora -> nome, aux -> jogo -> golos_casa, aux -> jogo -> golos_fora);
-        aux = aux -> prox;
-    }
-}
-
-
-void procura_jogo(int cont_linhas, lista_jogos** hash_table_jogos)
-{
-    char nome_jogo[MAX];
-    jogo* jogo;
-    scanf(" %s", nome_jogo);
-    if ((jogo = procura_jogo_hash(nome_jogo, hash_table_jogos)))
-        printf("%d %s %s %s %d %d\n", cont_linhas, jogo -> nome, jogo -> eq_casa -> nome, jogo -> eq_fora -> nome, jogo -> golos_casa, jogo -> golos_fora);
-    else
-        printf("%d Jogo inexistente.\n", cont_linhas);
-}
-
-void procura_equipa(int cont_linhas, lista_equipas** hash_table_equipas)
-{
-    char nome_equipa[MAX];
+    char nome[MAX];
     equipa* equipa;
-    scanf(" %s", nome_equipa);
-    if ((equipa = procura_equipa_hash(nome_equipa, hash_table_equipas)))
+    scanf(" %1023[^:\n]", nome);
+    if ((equipa = procura_equipa_hash(nome, h_equipas, tam_h_equipas)))
+    {
         printf("%d %s %d\n", cont_linhas, equipa -> nome, equipa -> vitorias);
-    else
-        printf("%d Equipa inexistente.\n", cont_linhas);
-}
-
-void apaga_jogo(int cont_linhas, lista_jogos** hash_table_jogos)
-{
-    char nome[MAX];
-    int hash_nome, apagado = 0;
-    node_jogo* aux;
-    scanf(" %s", nome);
-    hash_nome = hash(nome, HASH);
-    aux = hash_table_jogos[hash_nome] -> inicio;
-    while (aux)
-    {
-        if (!strcmp(aux -> jogo -> nome, nome))
-        {
-            if (!aux -> ant)
-            {
-                hash_table_jogos[hash_nome] -> inicio = hash_table_jogos[hash_nome] -> inicio -> prox;
-            }
-            else if (!aux -> prox)
-            {
-                hash_table_jogos[hash_nome] -> fim = hash_table_jogos[hash_nome] -> fim -> ant;
-            }
-            else
-            {
-                aux -> ant -> prox = aux -> prox;
-                aux -> prox -> ant = aux -> ant;
-            }
-            free(aux);
-            apagado = 1;
-        }
-        aux = aux -> prox;
+        return;
     }
-    if(!apagado)
-        printf("%d Jogo inexistente.\n", cont_linhas);
+    printf("%d Equipa inexistente.\n", cont_linhas);
 }
 
-void altera_score(int cont_linhas, lista_jogos** hash_table_jogos)
+/* Exibe no ecran as equipas no sistema com mais vitorias, por ordem lexicografica,
+ * caso exista pelo menos uma equipa no sistema. Se nao existir, esta funcao nada devolve.  
+ * A hash table com as equipas e percorrida duas vezes: para obter o numero
+ * maximo de vitorias e o numero de ocorrencias desse valor, e depois para
+ * copiar os nomes das equipas corresponentes, sendo ordenado o array desses valores
+ * antes de os apresentar. */
+void encontra_melhores_equipas(int cont_linhas, equipa** h_equipas, int tam_h_equipas, int cont_equipas)
 {
-    char nome[MAX];
-    jogo* jogo;
-    scanf(" %[^:\n]", nome);
-    if (!(jogo = procura_jogo_hash(nome, hash_table_jogos)))
-        printf("%d Jogo inexistente.\n", cont_linhas);
-    else
+    if (cont_equipas)
     {
-        repor_score(jogo -> eq_casa, jogo -> eq_fora, jogo -> golos_casa, jogo -> golos_fora);
-        scanf(":%d:%d", &jogo -> golos_casa, &jogo -> golos_fora);
-        atribui_vitoria(jogo -> eq_casa, jogo -> eq_fora, jogo -> golos_casa, jogo -> golos_fora);
-    } 
-}
-
-void encontra_melhores_equipas(int cont_linhas, int* cont_equipas, lista_equipas** hash_table_equipas)
-{
-    int max = -1, num_max = 0, i, j = 0;
-    char** melhores_equipas;
-    if (*cont_equipas)
-    {
-        for (i = 0; i < HASH; i++)
+        int max = -1, num_max = 0, i, j = 0, k, l;
+        char** melhores_equipas; /* Array usado para ordenar os nomes das melhores equipas no sistema. */
+        for (i = 0; i < tam_h_equipas; i++)
         {
-            node_equipa* aux = hash_table_equipas[i] -> inicio;
-            while (aux)
+            if (h_equipas[i])
             {
-                if (aux -> equipa.vitorias > max)
+                if (h_equipas[i] -> vitorias > max)
                 {
-                    max = aux -> equipa.vitorias;
+                    max = h_equipas[i] -> vitorias;
                     num_max = 1;
                 }
-                else if (aux -> equipa.vitorias == max)
-                {
+                else if (h_equipas[i] -> vitorias == max)
                     num_max++;
-                } 
-                aux = aux -> prox;
             }
         }
         melhores_equipas = (char**) malloc (sizeof(char*) * num_max);
-        for (i = 0; i < HASH; i++)
-        {
-            node_equipa* aux = hash_table_equipas[i] -> inicio;
-            while (aux)
-            {
-                if (aux -> equipa.vitorias == max)
-                {
-                    melhores_equipas[j++] = aux -> equipa.nome;
-                } 
-                aux = aux -> prox;
-            }
-        }
+        for (k = 0; k < tam_h_equipas; k++)
+            if (h_equipas[k] && h_equipas[k] -> vitorias == max)
+                melhores_equipas[j++] = h_equipas[k] -> nome;
         qsort(melhores_equipas, num_max, sizeof(char*), comparador);
         printf("%d Melhores %d\n", cont_linhas, max);
-        for (i = 0; i < j; i++)
+        for (l = 0; l < j; l++)
         {
-            printf("%d * %s\n", cont_linhas, melhores_equipas[i]);
+            printf("%d * %s\n", cont_linhas, melhores_equipas[l]);
         }
         free(melhores_equipas);
     }
 }
 
+
+/* Funcoes basicas sobre jogos (adicao, procura, remocao, alteracao de resultados e
+ * listagem por ordem de insercao).
+ * Estas funcoes recorrem a estruturas e outras funcoes presentes nos ficheiros
+ * Jogos.c, Jogos.h, Equipas.c e Equipas.h (em funcoes particulares). */
+
+/* Adiciona um jogo novo ao sistema, caso ainda nao exista um com o mesmo nome,
+ * e as equipas que se defrontam ja existam no sistema. */
+jogo** adiciona_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, int* tam_h_jogos, int* cont_jogos, equipa** h_equipas, int* tam_h_equipas)
+{
+    char nome_jogo[MAX], nome_casa[MAX], nome_fora[MAX];
+    equipa *eq_casa, *eq_fora;
+    int golos_casa, golos_fora;
+    jogo* novo_jogo;
+    scanf(" %1023[^:\n]:%1023[^:\n]:%1023[^:\n]:%d:%d", nome_jogo, nome_casa, nome_fora, &golos_casa, &golos_fora);
+    if (procura_jogo_hash(nome_jogo, h_jogos, *tam_h_jogos))
+    {
+        printf("%d Jogo existente.\n", cont_linhas);
+        return h_jogos;
+    }
+    if (!((eq_casa = procura_equipa_hash(nome_casa, h_equipas, *tam_h_equipas)) &&
+          (eq_fora = procura_equipa_hash(nome_fora, h_equipas, *tam_h_equipas))))
+    {
+        printf("%d Equipa inexistente.\n", cont_linhas);
+        return h_jogos;
+    }
+    (*cont_jogos)++;
+    novo_jogo = cria_jogo(nome_jogo, eq_casa, eq_fora, golos_casa, golos_fora);
+    insere_fim_jogo(lst_jogos, novo_jogo);
+    h_jogos = insere_jogo_hash(h_jogos, novo_jogo, cont_jogos, tam_h_jogos);
+    return h_jogos;
+}
+
+/* Procura um jogo no sistema e devolve o seu nome as equipas
+ * que se defrontam e o resultado do jogo, caso este exista. */ 
+void procura_jogo(int cont_linhas, jogo** h_jogos, int tam_h_jogos)
+{
+    char nome[MAX];
+    jogo* jogo;
+    scanf(" %1023[^:\n]", nome);
+    if ((jogo = procura_jogo_hash(nome, h_jogos, tam_h_jogos)))
+    {
+        printf("%d %s %s %s %d %d\n", cont_linhas, jogo -> nome, jogo -> eq_casa -> nome,
+        jogo -> eq_fora -> nome, jogo -> golos_casa, jogo -> golos_fora);
+        return;
+    }
+    printf("%d Jogo inexistente.\n", cont_linhas);
+}
+
+/* Remove um jogo do sistema (retirando da hash table e da lista dos jogos), caso exista. */
+jogo** apaga_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, int* tam_h_jogos, int* cont_jogos)
+{
+    char nome[MAX];
+    int i, j;
+    jogo* aux;
+    scanf(" %1023[^:\n]", nome);
+    i = hash(nome, *tam_h_jogos);
+    for (; h_jogos[i]; i = (i+1) % (*tam_h_jogos))
+        if (!strcmp(h_jogos[i] -> nome, nome))
+        {
+            repor_score(h_jogos[i] -> eq_casa, h_jogos[i] -> eq_fora,
+                        h_jogos[i] -> golos_casa, h_jogos[i] -> golos_fora);
+            apaga_jogo_lista(lst_jogos, nome);
+            free(h_jogos[i] -> nome);
+            free(h_jogos[i]);
+            h_jogos[i] = NULL;
+            (*cont_jogos)--;
+            for (j = (i+1) % (*tam_h_jogos); h_jogos[j]; j = (j+1) % (*tam_h_jogos))
+            {
+                (*cont_jogos)--;
+                aux = h_jogos[j];
+                h_jogos[j] = NULL;
+                h_jogos = insere_jogo_hash(h_jogos, aux, cont_jogos, tam_h_jogos);
+            }
+            return h_jogos;
+        }
+    printf("%d Jogo inexistente.\n", cont_linhas);
+    return h_jogos;
+}
+
+/* Altera o resultado de um jogo (e, por consequencia, atualiza o
+ * numero de vitorias das equipas que se defrontam), caso exista. */
+void altera_score(int cont_linhas, jogo** h_jogos, int tam_h_jogos)
+{
+    char nome[MAX];
+    int novos_golos_casa, novos_golos_fora;
+    jogo* jogo;
+    scanf(" %1023[^:\n]:%d:%d", nome, &novos_golos_casa, &novos_golos_fora);
+    if (!(jogo = procura_jogo_hash(nome, h_jogos, tam_h_jogos)))
+        printf("%d Jogo inexistente.\n", cont_linhas);
+    else
+    {
+        repor_score(jogo -> eq_casa, jogo -> eq_fora, jogo -> golos_casa, jogo -> golos_fora);
+        jogo -> golos_casa = novos_golos_casa;
+        jogo -> golos_fora = novos_golos_fora;
+        atribui_vitoria(jogo -> eq_casa, jogo -> eq_fora, jogo -> golos_casa, jogo -> golos_fora);
+    } 
+}
+
+/* Apresenta todos os jogos existentes no sistema pela ordem de
+ * insercao, com recurso a uma lista duplamente ligada de jogos. */
+void listar_jogos(int cont_linhas, lista_jogos* lst_jogos)
+{
+    node_jogo* aux = lst_jogos -> inicio;
+    while (aux)
+    {
+        if (aux -> jogo)
+            printf("%d %s %s %s %d %d\n", cont_linhas, aux -> jogo -> nome, aux -> jogo -> eq_casa -> nome,
+            aux -> jogo -> eq_fora -> nome, aux -> jogo -> golos_casa, aux -> jogo -> golos_fora);
+        aux = aux -> prox;
+    }
+}
+
+/* Recebe uma letra como comando e invoca a funcao correspondente, como
+descrito no enunciado do projeto. O comando 'x' encerra o programa. */
 int main()
 {
-    lista_jogos** hash_table_jogos = (lista_jogos**) malloc (sizeof(lista_jogos*)*HASH);
-    lista_jogos* lst_jogos = cria_lista_jogos();
-    lista_equipas** hash_table_equipas = (lista_equipas**) malloc (sizeof(lista_equipas*)*HASH);
-    int cont_linhas = 0, cont_equipas = 0;
-    char comm;
-    cria_hash_table_jogos(hash_table_jogos, HASH);
-    cria_hash_table_equipas(hash_table_equipas, HASH);
+    /* Inicializacao do numero da linha do input, de equipas e de jogos no sistema, alem do tamanho das hash tables correspondentes. */
+    int cont_linhas = 0, cont_equipas = 0, cont_jogos = 0, tam_h_equipas = HASH, tam_h_jogos = HASH;
+    /* Inicializacao das hash tables das equipas e dos jogos, alem da lista de jogos que permite listar, por ordem de insercao, as equipas do sistema. */
+    equipa** h_equipas = (equipa**) calloc (tam_h_equipas, sizeof(equipa*)); 
+    jogo** h_jogos = (jogo**) calloc (tam_h_jogos, sizeof(jogo));
+    lista_jogos* lst_jogos = cria_lst_jogos();
+    char comm; /* Inicializacao do caracter usado como comando do programa. */
     while ((comm = getchar()) != 'x') /* Introducao do comando. */
     {
         switch (comm)
         {
             case 'a':
-                adiciona_jogo(++cont_linhas, hash_table_equipas, lst_jogos, hash_table_jogos);
+                h_jogos = adiciona_jogo(++cont_linhas, h_jogos, lst_jogos, &tam_h_jogos, &cont_jogos, h_equipas, &tam_h_equipas);
                 break;
             case 'A':
-                adiciona_equipa(++cont_linhas, &cont_equipas, hash_table_equipas);
+                h_equipas = adiciona_equipa(++cont_linhas, h_equipas, &tam_h_equipas, &cont_equipas);
                 break;
             case 'l':
                 listar_jogos(++cont_linhas, lst_jogos);
                 break;
             case 'p':
-                procura_jogo(++cont_linhas, hash_table_jogos);
+                procura_jogo(++cont_linhas, h_jogos, tam_h_jogos);
                 break;
             case 'P':
-                procura_equipa(++cont_linhas, hash_table_equipas);
+                procura_equipa(++cont_linhas, h_equipas, tam_h_equipas);
                 break;
             case 'r':
-                apaga_jogo(++cont_linhas, hash_table_jogos);
+                h_jogos = apaga_jogo(++cont_linhas, h_jogos, lst_jogos, &tam_h_jogos, &cont_jogos);
                 break;
             case 's':
-                altera_score(++cont_linhas, hash_table_jogos);
+                altera_score(++cont_linhas, h_jogos, tam_h_jogos);
                 break;
             case 'g':
-                encontra_melhores_equipas(++cont_linhas, &cont_equipas, hash_table_equipas);
+                encontra_melhores_equipas(++cont_linhas, h_equipas, tam_h_equipas, cont_equipas);
                 break;
         }
     }
-    destroi_hash_table_equipas(hash_table_equipas, HASH);
-    free(hash_table_equipas);
-    destroi_hash_table_jogos(hash_table_jogos, HASH);
-    free(hash_table_jogos);
-    destroi_lista_jogos(0, lst_jogos);
+    destroi_h_jogos(h_jogos, tam_h_jogos);
+    destroi_lst_jogos(lst_jogos);
+    destroi_h_equipas(h_equipas, tam_h_equipas);
     return 0;
 }

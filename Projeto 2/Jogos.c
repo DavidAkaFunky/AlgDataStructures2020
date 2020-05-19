@@ -1,34 +1,21 @@
+/* Ficheiro: Projeto2/Jogos.c
+ * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
+ * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
+ * sobre estas entidades (criacao, alteracao de parametros e remocao).
+ * Descricao especifica: Este ficheiro contem as funcoes usadas nas funcoes basicas sobre jogos,
+ * nomeadamente de criacao de jogos e adicao, remocao de elementos e destruicao das estruturas
+ * usadas e declaradas no ficheiro Jogos.h (hash table e lista duplamente ligada).
+ */
+
 #include "Jogos.h"
 #include "Equipas.h"
-#include "Hash.h"
+#include "Misc.h"
 
-lista_jogos* cria_lista_jogos()
-{
-    lista_jogos* novo = malloc(sizeof(lista_jogos));
-    novo -> inicio = novo -> fim = NULL;
-    return novo;
-}
-
-void atribui_vitoria(equipa* eq_casa, equipa* eq_fora, int golos_casa, int golos_fora)
-{
-    if (golos_casa > golos_fora)
-        eq_casa -> vitorias++;
-    else if (golos_fora > golos_casa)
-        eq_fora -> vitorias++;
-}
-    
-void repor_score(equipa* eq_casa, equipa* eq_fora, int golos_casa, int golos_fora)
-{
-    if (golos_casa > golos_fora)
-        eq_casa -> vitorias--;
-    else if (golos_fora > golos_casa)
-        eq_fora -> vitorias--;
-}
-
+/* Inicializa um novo jogo com os argumentos fornecidos na funcao adiciona_jogo. */
 jogo* cria_jogo(char* nome, equipa* eq_casa, equipa* eq_fora, int golos_casa, int golos_fora)
 {
     jogo* novo_jogo = (jogo*) malloc(sizeof(jogo));
-    novo_jogo -> nome = (char*) malloc(strlen(nome)+1);
+    novo_jogo -> nome = (char*) malloc (strlen(nome)+1);
     strcpy(novo_jogo -> nome, nome);
     novo_jogo -> eq_casa = eq_casa;
     novo_jogo -> eq_fora = eq_fora;
@@ -38,9 +25,21 @@ jogo* cria_jogo(char* nome, equipa* eq_casa, equipa* eq_fora, int golos_casa, in
     return novo_jogo;
 }
 
+
+/* FUNCOES SOBRE LISTAS DUPLAMENTE LIGADAS DE JOGOS */
+
+/* Inicializa uma lista duplamente ligada de jogos. */
+lista_jogos* cria_lst_jogos()
+{
+    lista_jogos* novo = malloc(sizeof(lista_jogos));
+    novo -> inicio = novo -> fim = NULL;
+    return novo;
+}
+
+/* Insere um jogo como ultimo elemento (tail) da lista. */
 void insere_fim_jogo(lista_jogos* l, jogo* novo_jogo)
 {
-    node_jogo* n = malloc(sizeof(node_jogo));
+    node_jogo* n = (node_jogo*) malloc(sizeof(node_jogo));
     n -> prox = NULL;
     n -> ant = l -> fim;
     n -> jogo = novo_jogo;
@@ -51,57 +50,98 @@ void insere_fim_jogo(lista_jogos* l, jogo* novo_jogo)
         l -> inicio = n;
 }
 
-jogo* procura_jogo_hash(char* nome, lista_jogos** hash_table_jogos)
+/* Remove um jogo da lista, caso o seu nome coincida com o fornecido. */
+void apaga_jogo_lista(lista_jogos* l, char* nome)
 {
-    int hash_nome = hash(nome, HASH);
-    node_jogo* aux = hash_table_jogos[hash_nome] -> inicio;
-    while (aux)
+    node_jogo* aux1 = l -> inicio;
+    while (aux1)
     {
-        if (!strcmp(aux -> jogo -> nome, nome))
+        if (!strcmp(aux1 -> jogo -> nome, nome))
         {
-            return aux -> jogo;
+            node_jogo* aux2 = aux1;
+            if (l -> inicio == l -> fim)
+                l -> inicio = l -> fim = NULL; 
+            else if (aux1 == l -> inicio)
+            {
+                l -> inicio = l -> inicio -> prox;
+                aux1 -> prox -> ant = NULL;
+            }
+            else if (aux1 == l -> fim)
+            {
+                l -> fim = l -> fim -> ant;
+                aux1 -> ant -> prox = NULL;
+            }
+            else
+            {
+                aux1 -> ant -> prox = aux1 -> prox;
+                aux1 -> prox -> ant = aux1 -> ant;
+            }
+            free(aux2);
+            break;
         }
-        aux = aux -> prox;
+        aux1 = aux1 -> prox;
     }
-    return NULL;
 }
 
-void destroi_lista_jogos(int flag, lista_jogos* l)
+/* Remove todos os jogos da lista, a qual e destruida no final. */
+void destroi_lst_jogos(lista_jogos* l)
 {
     while (l -> fim)
     {
         node_jogo* aux = l -> fim -> ant;
-        if(flag)
-        {
-            free (l -> fim -> jogo -> nome);
-            free (l -> fim -> jogo);
-        }
         free(l -> fim);
         l -> fim = aux;
     }
     free(l);
 }
 
-void cria_hash_table_jogos(lista_jogos** hash_table_jogos, int hash)
+
+/* FUNCOES SOBRE HASH TABLES DE JOGOS: Esta hash table recorre a resolução
+ * linear de conflitos entre keys com o mesmo valor (linear probing). */
+
+/* Insere um jogo na hash table. Se o numero de jogos ultrapassar metade da hash
+ * table, ela e realocada para uma nova tabela com o dobro da dimensao inicial. */
+jogo** insere_jogo_hash(jogo** h_jogos, jogo* novo_jogo, int* cont_jogos, int* tam_h_jogos)
 {
-    int i;
-    for (i = 0; i < hash; i++)
+    int i = hash(novo_jogo -> nome, *tam_h_jogos);
+    while (h_jogos[i])
+        i = (i+1) % (*tam_h_jogos);
+    h_jogos[i] = novo_jogo;
+    if (*cont_jogos > *tam_h_jogos/2) /* Verifica se e necessaria realocacao. */
     {
-        hash_table_jogos[i] = cria_lista_jogos();
+        int j, novo_tam_h_jogos = 2*(*tam_h_jogos);
+        jogo** aux = (jogo**) calloc (novo_tam_h_jogos, sizeof(jogo*));
+        for (j = 0; j < *tam_h_jogos; j++)
+            if (h_jogos[j])
+                insere_jogo_hash(aux, h_jogos[j], cont_jogos, &novo_tam_h_jogos);
+        free(h_jogos);
+        *tam_h_jogos = novo_tam_h_jogos;
+        h_jogos = aux;
     }
+    return h_jogos;
 }
 
-void insere_jogo_hash(lista_jogos** hash_table_jogos, jogo* novo_jogo)
+/* Procura um jogo na hash table, dado um nome.
+ * Se ele existir, um ponteiro para esse jogo e devolvido pela funcao. */
+jogo* procura_jogo_hash(char* nome, jogo** h_jogos, int tam_h_jogos)
 {
-    int hash_nome = hash(novo_jogo -> nome, HASH);
-    insere_fim_jogo(hash_table_jogos[hash_nome], novo_jogo);
+    int i = hash(nome, tam_h_jogos);
+    for (; h_jogos[i]; i = (i+1) % tam_h_jogos)
+        if (!strcmp(h_jogos[i] -> nome, nome))
+            return h_jogos[i];
+    return NULL;
 }
 
-void destroi_hash_table_jogos(lista_jogos** hash_table_jogos, int hash)
+/* Remove todos os jogos da hash table (incluindo os seus
+ * nomes) previamente alocados, e destroi a propria tabela. */
+void destroi_h_jogos(jogo** h_jogos, int tam_h_jogos)
 {
     int i;
-    for (i = 0; i < hash; i++)
-    {
-        destroi_lista_jogos(1, hash_table_jogos[i]);
-    }
+    for (i = 0; i < tam_h_jogos; i++)
+        if (h_jogos[i])
+        {
+            free(h_jogos[i] -> nome);
+            free(h_jogos[i]);
+        }
+    free(h_jogos);
 }
