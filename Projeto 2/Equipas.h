@@ -1,3 +1,10 @@
+/* Ficheiro: Projeto2/Misc.h
+ * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
+ * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
+ * sobre estas entidades (criacao, alteracao de parametros e remocao).
+ * Descricao especifica: Este ficheiro e o header file correspondente ao ficheiro Equipas.c.
+ */
+
 #ifndef _EQUIPAS_H_
 #define _EQUIPAS_H_
 
@@ -5,11 +12,15 @@
 #include <string.h>
 #include <stdlib.h>
 
+/* Definicao da estrutura que representa uma equipa. */
+
 typedef struct
 {
     char* nome;
     int vitorias;
 } equipa;
+
+/* Definicao dos prototipos das funcoes existentes no ficheiro Equipas.c. */
 
 equipa* cria_equipa(char* nome);
 

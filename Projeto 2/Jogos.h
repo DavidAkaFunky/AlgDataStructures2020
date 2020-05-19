@@ -1,3 +1,10 @@
+/* Ficheiro: Projeto2/Misc.h
+ * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
+ * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
+ * sobre estas entidades (criacao, alteracao de parametros e remocao).
+ * Descricao especifica: Este ficheiro e o header file correspondente ao ficheiro Jogos.c.
+ */
+
 #ifndef _JOGOS_H_
 #define _JOGOS_H_
 
@@ -5,6 +12,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "Equipas.h"
+
+/* Definicao de estruturas relacionadas com jogos. */
 
 typedef struct
 {
@@ -25,6 +34,8 @@ typedef struct
 {
     struct node_jogo *inicio, *fim;
 } lista_jogos;
+
+/* Definicao dos prototipos das funcoes existentes no ficheiro Jogos.c. */
 
 lista_jogos* cria_lst_jogos();
 
