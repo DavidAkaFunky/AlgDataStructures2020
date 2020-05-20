@@ -112,6 +112,7 @@ jogo** insere_jogo_h(jogo** h_jogos, jogo* novo_jogo, int* cont_jogos, int* tam_
     return h_jogos;
 }
 
+/* Duplica uma hash table de jogos e efetua o respetivo rehashing dos seus elementos. */
 jogo** expande_h_jogos(jogo** h_jogos, int* cont_jogos, int* tam_h_jogos)
 {
     int j, novo_tam_h_jogos = 2*(*tam_h_jogos);
