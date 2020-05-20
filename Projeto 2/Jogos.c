@@ -51,7 +51,7 @@ void insere_fim_jogo(lista_jogos* l, jogo* novo_jogo)
 }
 
 /* Remove um jogo da lista, caso o seu nome coincida com o fornecido. */
-void apaga_jogo_lista(lista_jogos* l, char* nome)
+void remove_jogo_lst(lista_jogos* l, char* nome)
 {
     node_jogo* aux1 = l -> inicio;
     while (aux1)
@@ -101,29 +101,33 @@ void destroi_lst_jogos(lista_jogos* l)
 
 /* Insere um jogo na hash table. Se o numero de jogos ultrapassar metade da hash
  * table, ela e realocada para uma nova tabela com o dobro da dimensao inicial. */
-jogo** insere_jogo_hash(jogo** h_jogos, jogo* novo_jogo, int* cont_jogos, int* tam_h_jogos)
+jogo** insere_jogo_h(jogo** h_jogos, jogo* novo_jogo, int* cont_jogos, int* tam_h_jogos)
 {
     int i = hash(novo_jogo -> nome, *tam_h_jogos);
     while (h_jogos[i])
         i = (i+1) % (*tam_h_jogos);
     h_jogos[i] = novo_jogo;
     if (*cont_jogos > *tam_h_jogos/2) /* Verifica se e necessaria realocacao. */
-    {
-        int j, novo_tam_h_jogos = 2*(*tam_h_jogos);
-        jogo** aux = (jogo**) calloc (novo_tam_h_jogos, sizeof(jogo*));
-        for (j = 0; j < *tam_h_jogos; j++)
-            if (h_jogos[j])
-                insere_jogo_hash(aux, h_jogos[j], cont_jogos, &novo_tam_h_jogos);
-        free(h_jogos);
-        *tam_h_jogos = novo_tam_h_jogos;
-        h_jogos = aux;
-    }
+        h_jogos = expande_h_jogos(h_jogos, cont_jogos, tam_h_jogos);
     return h_jogos;
 }
 
+jogo** expande_h_jogos(jogo** h_jogos, int* cont_jogos, int* tam_h_jogos)
+{
+    int j, novo_tam_h_jogos = 2*(*tam_h_jogos);
+    jogo** aux = (jogo**) calloc (novo_tam_h_jogos, sizeof(jogo*));
+    for (j = 0; j < *tam_h_jogos; j++)
+        if (h_jogos[j])
+            insere_jogo_h(aux, h_jogos[j], cont_jogos, &novo_tam_h_jogos);
+    free(h_jogos);
+    *tam_h_jogos = novo_tam_h_jogos;
+    return aux;
+}
+
+
 /* Procura um jogo na hash table, dado um nome.
  * Se ele existir, um ponteiro para esse jogo e devolvido pela funcao. */
-jogo* procura_jogo_hash(char* nome, jogo** h_jogos, int tam_h_jogos)
+jogo* procura_jogo_h(char* nome, jogo** h_jogos, int tam_h_jogos)
 {
     int i = hash(nome, tam_h_jogos);
     for (; h_jogos[i]; i = (i+1) % tam_h_jogos)

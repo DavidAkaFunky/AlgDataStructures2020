@@ -43,13 +43,15 @@ jogo* cria_jogo(char* nome, equipa* eq_casa, equipa* eq_fora, int golos_casa, in
 
 void insere_fim_jogo(lista_jogos* l, jogo* novo_jogo);
 
-void apaga_jogo_lista(lista_jogos* l, char* nome);
+void remove_jogo_lst(lista_jogos* l, char* nome);
 
 void destroi_lst_jogos(lista_jogos* l);
 
-jogo** insere_jogo_hash(jogo** h_jogos, jogo* novo_jogo, int* cont_jogos, int* tam_h_jogos);
+jogo** insere_jogo_h(jogo** h_jogos, jogo* novo_jogo, int* cont_jogos, int* tam_h_jogos);
 
-jogo* procura_jogo_hash(char* nome, jogo** h_jogos, int tam_h_jogos);
+jogo** expande_h_jogos(jogo** h_jogos, int* cont_jogos, int* tam_h_jogos);
+
+jogo* procura_jogo_h(char* nome, jogo** h_jogos, int tam_h_jogos);
 
 void destroi_h_jogos(jogo** h_jogos, int tam_h_jogos);
 

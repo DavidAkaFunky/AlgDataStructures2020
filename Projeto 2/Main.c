@@ -24,14 +24,14 @@ equipa** adiciona_equipa(int cont_linhas, equipa** h_equipas, int* tam_h_equipas
     char nome[MAX];
     equipa* nova_equipa;
     scanf(" %1023[^:\n]", nome);
-    if (procura_equipa_hash(nome, h_equipas, *tam_h_equipas))
+    if (procura_equipa_h(nome, h_equipas, *tam_h_equipas))
     {
         printf("%d Equipa existente.\n", cont_linhas);
         return h_equipas;
     }
     (*cont_equipas)++;
     nova_equipa = cria_equipa(nome);
-    h_equipas = insere_equipa_hash(h_equipas, nova_equipa, cont_equipas, tam_h_equipas);
+    h_equipas = insere_equipa_h(h_equipas, nova_equipa, cont_equipas, tam_h_equipas);
     return h_equipas;
 }
 
@@ -41,7 +41,7 @@ void procura_equipa(int cont_linhas, equipa** h_equipas, int tam_h_equipas)
     char nome[MAX];
     equipa* equipa;
     scanf(" %1023[^:\n]", nome);
-    if ((equipa = procura_equipa_hash(nome, h_equipas, tam_h_equipas)))
+    if ((equipa = procura_equipa_h(nome, h_equipas, tam_h_equipas)))
     {
         printf("%d %s %d\n", cont_linhas, equipa -> nome, equipa -> vitorias);
         return;
@@ -103,13 +103,13 @@ jogo** adiciona_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, in
     int golos_casa, golos_fora;
     jogo* novo_jogo;
     scanf(" %1023[^:\n]:%1023[^:\n]:%1023[^:\n]:%d:%d", nome_jogo, nome_casa, nome_fora, &golos_casa, &golos_fora);
-    if (procura_jogo_hash(nome_jogo, h_jogos, *tam_h_jogos))
+    if (procura_jogo_h(nome_jogo, h_jogos, *tam_h_jogos))
     {
         printf("%d Jogo existente.\n", cont_linhas);
         return h_jogos;
     }
-    if (!((eq_casa = procura_equipa_hash(nome_casa, h_equipas, *tam_h_equipas)) &&
-          (eq_fora = procura_equipa_hash(nome_fora, h_equipas, *tam_h_equipas))))
+    if (!((eq_casa = procura_equipa_h(nome_casa, h_equipas, *tam_h_equipas)) &&
+          (eq_fora = procura_equipa_h(nome_fora, h_equipas, *tam_h_equipas))))
     {
         printf("%d Equipa inexistente.\n", cont_linhas);
         return h_jogos;
@@ -117,7 +117,7 @@ jogo** adiciona_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, in
     (*cont_jogos)++;
     novo_jogo = cria_jogo(nome_jogo, eq_casa, eq_fora, golos_casa, golos_fora);
     insere_fim_jogo(lst_jogos, novo_jogo);
-    h_jogos = insere_jogo_hash(h_jogos, novo_jogo, cont_jogos, tam_h_jogos);
+    h_jogos = insere_jogo_h(h_jogos, novo_jogo, cont_jogos, tam_h_jogos);
     return h_jogos;
 }
 
@@ -128,7 +128,7 @@ void procura_jogo(int cont_linhas, jogo** h_jogos, int tam_h_jogos)
     char nome[MAX];
     jogo* jogo;
     scanf(" %1023[^:\n]", nome);
-    if ((jogo = procura_jogo_hash(nome, h_jogos, tam_h_jogos)))
+    if ((jogo = procura_jogo_h(nome, h_jogos, tam_h_jogos)))
     {
         printf("%d %s %s %s %d %d\n", cont_linhas, jogo -> nome, jogo -> eq_casa -> nome,
         jogo -> eq_fora -> nome, jogo -> golos_casa, jogo -> golos_fora);
@@ -138,7 +138,7 @@ void procura_jogo(int cont_linhas, jogo** h_jogos, int tam_h_jogos)
 }
 
 /* Remove um jogo do sistema (retirando da hash table e da lista dos jogos), caso exista. */
-jogo** apaga_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, int* tam_h_jogos, int* cont_jogos)
+jogo** remove_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, int* tam_h_jogos, int* cont_jogos)
 {
     char nome[MAX];
     int i, j;
@@ -150,7 +150,7 @@ jogo** apaga_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, int* 
         {
             repor_score(h_jogos[i] -> eq_casa, h_jogos[i] -> eq_fora,
                         h_jogos[i] -> golos_casa, h_jogos[i] -> golos_fora);
-            apaga_jogo_lista(lst_jogos, nome);
+            remove_jogo_lst(lst_jogos, nome);
             free(h_jogos[i] -> nome);
             free(h_jogos[i]);
             h_jogos[i] = NULL;
@@ -160,7 +160,7 @@ jogo** apaga_jogo(int cont_linhas, jogo** h_jogos, lista_jogos* lst_jogos, int* 
                 (*cont_jogos)--;
                 aux = h_jogos[j];
                 h_jogos[j] = NULL;
-                h_jogos = insere_jogo_hash(h_jogos, aux, cont_jogos, tam_h_jogos);
+                h_jogos = insere_jogo_h(h_jogos, aux, cont_jogos, tam_h_jogos);
             }
             return h_jogos;
         }
@@ -176,7 +176,7 @@ void altera_score(int cont_linhas, jogo** h_jogos, int tam_h_jogos)
     int novos_golos_casa, novos_golos_fora;
     jogo* jogo;
     scanf(" %1023[^:\n]:%d:%d", nome, &novos_golos_casa, &novos_golos_fora);
-    if (!(jogo = procura_jogo_hash(nome, h_jogos, tam_h_jogos)))
+    if (!(jogo = procura_jogo_h(nome, h_jogos, tam_h_jogos)))
         printf("%d Jogo inexistente.\n", cont_linhas);
     else
     {
@@ -232,7 +232,7 @@ int main()
                 procura_equipa(++cont_linhas, h_equipas, tam_h_equipas);
                 break;
             case 'r':
-                h_jogos = apaga_jogo(++cont_linhas, h_jogos, lst_jogos, &tam_h_jogos, &cont_jogos);
+                h_jogos = remove_jogo(++cont_linhas, h_jogos, lst_jogos, &tam_h_jogos, &cont_jogos);
                 break;
             case 's':
                 altera_score(++cont_linhas, h_jogos, tam_h_jogos);
