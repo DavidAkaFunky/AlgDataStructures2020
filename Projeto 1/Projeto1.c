@@ -30,18 +30,18 @@ produto produtos[MAX_PROD]; /* Inicializacao do array dos produtos. */
 char comm; /* Inicializacao do caracter usado como comando do programa. */
 int encomendas[MAX_ENC][MAX_PROD]; /* Inicializaco do array das encomendas. */
 int contador_prod = 0, contador_enc = 0; /* Inicializacao dos contadores do numero de produtos e de encomendas no sistema. */
-int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, chamado pelas funcoes comm_l e comm_L. */
+int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, chamado pelas funcoes prod_ord_custo e prod_ord_custo. */
 
 /* Adiciona um produto novo ao sistema (com auxilio do incremento do contador de produtos,
 feito dentro da funcao main), de acordo com a definicao da estrutura correspondente. */
-void comm_a(int contador_prod)
+void add_produto (int contador_prod)
 {
     scanf (" %[^:]:%d:%d:%d", produtos[contador_prod].nome, &produtos[contador_prod].preco, &produtos[contador_prod].peso, &produtos[contador_prod].qtd);
     printf ("Novo produto %d.\n", contador_prod);
 }
 
 /* Adiciona qtd unidades do produto idp ao sistema, caso esse produto exista. */
-void comm_q (int contador_prod)
+void add_unid_produto (int contador_prod)
 {
     int idp, qtd;
     scanf (" %d", &idp);
@@ -56,7 +56,7 @@ void comm_q (int contador_prod)
 
 /* Adiciona uma encomenda ao sistema (com auxilio do incremento 
 do contador de encomendas, feito dentro da funcao main). */
-void comm_N (int contador_enc)
+void add_encomenda (int contador_enc)
 {
     printf ("Nova encomenda %d.\n", contador_enc);
 }
@@ -65,7 +65,7 @@ void comm_N (int contador_enc)
 exista na quantidade pedida, a encomenda tambem exista e o peso da encomenda
 (soma dos produtos, multiplicados, respetivamente, pelo seu peso unitario) nao
 exceda 200. Se tal for possivel, essas unidades sao removidas do sistema. */
-void comm_A (int contador_prod, int contador_enc)
+void add_unid_encomenda (int contador_prod, int contador_enc)
 {
     int ide, idp, qtd, peso = 0, i;
     scanf ("%d:%d:", &ide, &idp);
@@ -96,7 +96,7 @@ void comm_A (int contador_prod, int contador_enc)
 
 /* Remove qtd unidades do produto idp do sistema, 
 caso esse produto exista na quantidade pedida.*/
-void comm_r (int contador_prod)
+void rem_unid_encomenda (int contador_prod)
 {
     int idp, qtd;
     scanf ("%d", &idp);
@@ -115,7 +115,7 @@ void comm_r (int contador_prod)
 
 /* Remove todas as unidades do produto idp da encomenda ide, caso ambos existam.
 Se tal for possivel, essas unidades sao devolvidas ao sistema. */
-void comm_R (int contador_prod, int contador_enc)
+void rem_todas_unid_encomenda (int contador_prod, int contador_enc)
 {
     int ide, idp;
     scanf ("%d:%d:", &ide, &idp);
@@ -135,7 +135,7 @@ void comm_R (int contador_prod, int contador_enc)
 
 /* Calcula e devolve o custo total de uma encomenda (soma dos produtos, multiplicados,
 respetivamente, pelo seu custo unitario), caso essa encomenda exista. */
-void comm_C (int contador_prod, int contador_enc)
+void custo_encomenda (int contador_prod, int contador_enc)
 {
     int ide, i, total = 0;
     scanf ("%d", &ide);
@@ -150,7 +150,7 @@ void comm_C (int contador_prod, int contador_enc)
 }
 
 /* Altera o preco unitario de um produto, caso ele exista. */
-void comm_p (int contador_prod)
+void altera_preco (int contador_prod)
 {
     int idp;
     scanf ("%d", &idp);
@@ -161,7 +161,7 @@ void comm_p (int contador_prod)
 }
 
 /* Devolve o nome do produto idp e a sua quantidade na encomenda ide, caso ambos existam. */
-void comm_E (int contador_prod, int contador_enc)
+void print_prod_encomenda (int contador_prod, int contador_enc)
 {
     int ide, idp;
     scanf ("%d", &ide);
@@ -179,7 +179,7 @@ void comm_E (int contador_prod, int contador_enc)
 
 /* Devolve o ide (ID da encomenda) onde o produto idp existe em 
 maior quantidade e a respetiva quantidade, caso ambos existam. */
-void comm_m (int contador_prod, int contador_enc)
+void max_qtd_prod_encomenda (int contador_prod, int contador_enc)
 {
     int idp, ide, ide_max, qtd = 0;
     scanf ("%d", &idp);
@@ -202,7 +202,7 @@ void comm_m (int contador_prod, int contador_enc)
 
 /* Funcao nuclear do merge sort: a flag e usada como alternador entre
 o arrays a ordenar, conforme a funcao que invocou o merge sort (1 no
-caso de comm_l, 0 no caso de comm_L). Esta funcao e estavel, devido
+caso de prod_ord_custo, 0 no caso de prod_ord_custo). Esta funcao e estavel, devido
 as restricoes de desempate descritas no enunciado do projeto. */
 void merge(int flag, int esq, int meio, int dir)
 {
@@ -241,7 +241,7 @@ void mergesort(int flag, int esq, int dir)
 de custo unitario, com recurso a um array auxiliar que contem os indices dos produtos
 e que, no final, refletira essa ordem. Em caso de empate, os produtos em questao sao 
 listados por ordem crescente de idp.*/
-void comm_l (int contador_prod)
+void prod_ord_custo (int contador_prod)
 {
     int i, j;
     puts ("Produtos");
@@ -256,7 +256,7 @@ void comm_l (int contador_prod)
 por ordem alfabetica do seu nome, com recurso a um array auxiliar que 
 contem os indices dos produtos e que, no final, refletira essa ordem. 
 Em caso de empate, os produtos em questao sao listados por ordem crescente de idp. */
-void comm_L (int contador_prod, int contador_enc)
+void prod_enc_ord_nome (int contador_prod, int contador_enc)
 {
     int ide, i, j, contador = 0;
     scanf ("%d", &ide);
@@ -284,40 +284,40 @@ int main()
         switch (comm)
         {
             case 'a':
-                comm_a (contador_prod++);
+                add_produto (contador_prod++);
                 break;
             case 'q':
-                comm_q (contador_prod);
+                add_unid_produto (contador_prod);
                 break;
             case 'N':
-                comm_N (contador_enc++);
+                add_encomenda (contador_enc++);
                 break;
             case 'A':
-                comm_A (contador_prod, contador_enc);
+                add_unid_encomenda (contador_prod, contador_enc);
                 break;
             case 'r':
-                comm_r (contador_prod);
+                rem_unid_encomenda (contador_prod);
                 break;
             case 'R':
-                comm_R (contador_prod, contador_enc);
+                rem_todas_unid_encomenda (contador_prod, contador_enc);
                 break;
             case 'C':
-                comm_C (contador_prod, contador_enc);
+                custo_encomenda (contador_prod, contador_enc);
                 break;
             case 'p':
-                comm_p (contador_prod);
+                altera_preco (contador_prod);
                 break;
             case 'E':
-                comm_E (contador_prod, contador_enc);
+                print_prod_encomenda (contador_prod, contador_enc);
                 break;
             case 'm':
-                comm_m (contador_prod, contador_enc);
+                max_qtd_prod_encomenda (contador_prod, contador_enc);
                 break;
             case 'l':
-                comm_l (contador_prod);
+                prod_ord_custo (contador_prod);
                 break;
             case 'L':
-                comm_L (contador_prod, contador_enc);
+                prod_enc_ord_nome (contador_prod, contador_enc);
                 break;
         }
     }
