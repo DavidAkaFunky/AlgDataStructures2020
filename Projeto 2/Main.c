@@ -1,9 +1,9 @@
 /* Ficheiro: Projeto2/Main.c
  * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
- * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
+ * Descricao do projeto: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
  * sobre estas entidades (criacao, alteracao de parametros e remocao).
- * Descricao especifica: Este ficheiro contem as funcoes basicas chamadas pelo programa
- * atraves do caracter inicial.
+ * Descricao do ficheiro: Este ficheiro contem as funcoes basicas chamadas pelo programa
+ * atraves do caracter inicial de cada linha do input.
  */
 
 #include <stdio.h>
@@ -13,10 +13,8 @@
 #include "Jogos.h"
 #include "Misc.h"
 
-/* Funcoes basicas sobre equipas (adicao, procura e listagem das que possuem mais vitorias)
- * Estas funcoes recorrem a estruturas e outras funcoes presentes nos ficheiros Equipas.c
- * e Equipas.h.
- */
+/* FUNCOES BASICAS SOBRE EQUIPAS (adicao, procura e listagem das que possuem mais vitorias):
+ * Estas funcoes recorrem a estruturas e outras funcoes presentes nos ficheiros Equipas.c e Equipas.h. */
 
 /* Adiciona uma equipa ao sistema, caso ainda nao exista uma com o mesmo nome. */
 equipa** adiciona_equipa(int cont_linhas, equipa** h_equipas, int* tam_h_equipas, int* cont_equipas)
@@ -89,10 +87,9 @@ void encontra_melhores_equipas(int cont_linhas, equipa** h_equipas, int tam_h_eq
 }
 
 
-/* Funcoes basicas sobre jogos (adicao, procura, remocao, alteracao de resultados e
- * listagem por ordem de insercao).
- * Estas funcoes recorrem a estruturas e outras funcoes presentes nos ficheiros
- * Jogos.c, Jogos.h, Equipas.c e Equipas.h (em funcoes particulares). */
+/* FUNCOES BASICAS SOBRE JOGOS (adicao, procura, remocao, alteracao de resultados e
+ * listagem por ordem de insercao): Estas funcoes recorrem a estruturas e outras funcoes 
+ * presentes nos ficheiros Jogos.c, Jogos.h, Equipas.c e Equipas.h (em funcoes particulares). */
 
 /* Adiciona um jogo novo ao sistema, caso ainda nao exista um com o mesmo nome,
  * e as equipas que se defrontam ja existam no sistema. */

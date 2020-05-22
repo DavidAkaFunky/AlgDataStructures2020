@@ -1,8 +1,6 @@
 /* Ficheiro: Projeto2/Jogos.c
  * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
- * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
- * sobre estas entidades (criacao, alteracao de parametros e remocao).
- * Descricao especifica: Este ficheiro contem as funcoes usadas nas funcoes basicas sobre jogos,
+ * Descricao do ficheiro: Este ficheiro contem as funcoes usadas nas funcoes basicas sobre jogos,
  * nomeadamente de criacao de jogos e adicao, remocao de elementos e destruicao das estruturas
  * usadas e declaradas no ficheiro Jogos.h (hash table e lista duplamente ligada).
  */

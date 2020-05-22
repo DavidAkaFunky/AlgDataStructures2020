@@ -1,8 +1,6 @@
 /* Ficheiro: Projeto2/Misc.c
  * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
- * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
- * sobre estas entidades (criacao, alteracao de parametros e remocao).
- * Descricao especifica: Este ficheiro contem algumas funcoes que nao se encaixam totalmente nos
+ * Descricao do ficheiro: Este ficheiro contem algumas funcoes que nao se encaixam totalmente nos
  * ficheiros anteriores, nomeadamente as funcoes de hashing, comparacao (usada no qsort)
  * e reposicao e atribuicao de vitorias as equipas que se defrontam nos jogos.
  */

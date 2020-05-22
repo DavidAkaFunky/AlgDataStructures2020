@@ -1,8 +1,6 @@
 /* Ficheiro: Projeto2/Equipas.c
  * Nome: David Emanuel Silva Belchior -- Instituto Superior Tecnico -- LEIC-A -- Numero 95550 
- * Descricao generica: Sistema de jogos amigáveis, envolvendo equipas e jogos, alem de operacoes
- * sobre estas entidades (criacao, alteracao de parametros e remocao).
- * Descricao especifica: Este ficheiro contem as funcoes usadas nas funcoes basicas sobre equipas,
+ * Descricao do ficheiro: Este ficheiro contem as funcoes usadas nas funcoes basicas sobre equipas,
  * nomeadamente de criacao de equipas e adicao, remocao de elementos e destruicao da hash table existente.
  */
 
