@@ -30,7 +30,7 @@ produto produtos[MAX_PROD]; /* Inicializacao do array dos produtos. */
 char comm; /* Inicializacao do caracter usado como comando do programa. */
 int encomendas[MAX_ENC][MAX_PROD]; /* Inicializaco do array das encomendas. */
 int contador_prod = 0, contador_enc = 0; /* Inicializacao dos contadores do numero de produtos e de encomendas no sistema. */
-int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, chamado pelas funcoes prod_ord_custo e prod_ord_custo. */
+int ord[MAX_PROD]; /* Inicializacao do array dos indices usado no merge sort, chamado pelas funcoes prod_ord_custo e prod_enc_ord_nome. */
 
 /* Adiciona um produto novo ao sistema (com auxilio do incremento do contador de produtos,
 feito dentro da funcao main), de acordo com a definicao da estrutura correspondente. */
